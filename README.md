@@ -6,9 +6,9 @@ The schedule was it's own tarbell project, as were each of the 16 gameday apps.
 # Store the data
 The principal behind this whole component is that the data is pulled from a spreadsheet with two sheets:
 
-	- *Sheet 1:* This sheet houses game-specifc data, such as opponent, home/away, kickoff time, radio and tv stations and (eventually) score/overtime.
+- **Sheet 1:** This sheet houses game-specifc data, such as opponent, home/away, kickoff time, radio and tv stations and (eventually) score/overtime.
 
-	- *Sheet 2:* This houses general info about each time. I used to to store things like stadium name, stadium location, team hex colors, and the proper Bears color to use. Normally I used the Bears blue, but switched to the team orange when the opponent used blue. I don't think I referenced this page in the actual schedule. The same sheet appears in each of the weekly projects, and it was very helpful there.
+- **Sheet 2:** This houses general info about each time. I used to to store things like stadium name, stadium location, team hex colors, and the proper Bears color to use. Normally I used the Bears blue, but switched to the team orange when the opponent used blue. I don't think I referenced this page in the actual schedule. The same sheet appears in each of the weekly projects, and it was very helpful there.
 
 
 # Retrieve the data
