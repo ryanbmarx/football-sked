@@ -34,7 +34,7 @@ function detectMobile(){
 
 function buildSked(information){
 
-  var activeWeek = {{ week }};
+  var activeWeek = {{ week }}; // This is a jinja key-value passed from the spreadsheet for that week's game
 
   var schedule_arr = information.schedule;
   var schedule_html= '';
