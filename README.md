@@ -12,5 +12,8 @@ The principal behind this whole component is that the data is pulled from a spre
 
 
 # Retrieve the data
-This is the bass-ackwards part. I used a jinja loop (through tabell) to compile the sheet 2 data into a JSON file. I put a `<script>` tag in the header of each week's project. This kept the data current for each week without having to republish each project each week. There probably are much smarter, javascript-based ways to do this. If I were to do it again, I'd probably skip tarbell altogether and just pull directly from the Google sheet using jquery + UnderscoreJS. I've never used TabletopJS, but I hear it does the same thing.
+This is the bass-ackwards part. I used a jinja loop (through tabell) to compile the sheet 2 data into a JSON file. I put a `<script>` tag in the header of each week's project. This kept the data current for each week without having to republish each project each week. There probably are much smarter, javascript-based ways to do this. If I were to do it again, I'd probably skip tarbell altogether and just pull directly from the Google sheet using **jQuery + UnderscoreJS**. I've never used **TabletopJS**, but I hear it does the same thing.
+
+# Format the data
+However you choose to retrieve your data, there is a complicated JS loop which drops formatted HTML into two buckets: the mobile version and the desktop version.
 
