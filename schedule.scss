@@ -14,8 +14,6 @@ $sans_serif:'Arial', sans-serif;
 }
 
 
-
-
 /* BEARS SCHEDULE STYLES */
 
 .sked-topper{
@@ -72,14 +70,14 @@ $sans_serif:'Arial', sans-serif;
 			border-top: 1px solid #888;
 		}
 
-	&.active a, .played:hover{
-		padding-left:8px;
-		cursor: pointer;
-		border-left:6px solid $bears_orange;
-	}
-	&.active a{
-		border-right:1px solid transparent;
-	}
+		&.active a, .played:hover{
+			padding-left:8px;
+			cursor: pointer;
+			border-left:6px solid $bears_orange;
+		}
+		&.active a{
+			border-right:1px solid transparent;
+		}
 
 		img{
 			width: 40px;
