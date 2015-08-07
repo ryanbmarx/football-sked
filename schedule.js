@@ -1,147 +1,55 @@
-function viewport() {
-  var e = window
-  , a = 'inner';
-  if ( !( 'innerWidth' in window ) )
-  {
-    a = 'client';
-    e = document.documentElement || document.body;
-  }
-  return { width : e[ a+'Width' ] , height : e[ a+'Height' ] }
-}
-
-// This variable will be the cue whether to trigger mobile JS or not.
-var onMobile;
-function detectMobile(){
-  if(viewport().width>768){
-    onMobile = 'false';
-    $('#bears-sked:hidden').css('display','block');
-    if($(".pre-post-switcher-mobile a[data-target='sked']").hasClass('active')){
-      // activate pre content
-      $(".pre-post-switcher-mobile a[data-target='sked']").removeClass('active');
-      $(".pre-post-switcher-mobile a[data-target='pre']").addClass('active');
-      $(".pre-post-switcher a[data-target='pre']").addClass('active');
-      $(".pre-post-switcher a[data-target='post']").removeClass('active');
-      $(".pre-content").css('display','block');
-    }
-  } else {
-    onMobile = 'true';
-    if(!($(".pre-post-switcher-mobile a[data-target='sked']").hasClass('active'))){
-      $('#bears-sked').css('display','none');
-     }
-  }
-}
-
-
-function buildSked(information){
-
-  var activeWeek = {{ week }}; // This is a jinja key-value passed from the spreadsheet for that week's game
-
-  var schedule_arr = information.schedule;
-  var schedule_html= '';
-  var schedule_html_arr= new Array();
-
+/*
+  This script requires jQuery and UnderscoreJS ...
   
-  for(i=0; i<17; i++){
-    if(schedule_arr[i].team == "open"){
-      // Bye week
-      if(onMobile == "false"){
-        schedule_html_arr[i] = "<li class='open'><h3>Open</h3></li>"
+  <script type="text/javascript" src ="//code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 
+*/
+
+
+(function ($) {
+  // MODIFY THESE TO TARGET A DIFFERENT SPREADSHEET
+  var sheetKey = "1ztdofs5SzPdQW9Gt8orfJvW5vWGJGQZ8XvU0Tfw4pJY", // Google Sheet id
+    tab = 2, // The sheets's first tab is No. 1
+    activeWeek = 1; // You'll need a way to change this based on the project/week being viewed. I'd use jinja. This is how the border on the right side of the active week is removed
+
+    $.get('https://spreadsheets.google.com/feeds/list/'+ sheetKey +'/'+ tab +'/public/values?alt=json', function(data){
+    var schedule = data.feed.entry, // holder for the data
+      pastScheduleTemplate = _.template($('#past').html()), //template for played games
+      presentFutureTemplate = _.template($("#present-future").html()), // template for upcoming games
+      parsedTemplateArray = [];
+
+      for (i=0;i<schedule.length;i++){
+        console.log("Now serving " + schedule[i]["gsx$team"]["$t"]);
+      // Loop it here.
+      if(schedule[i]["gsx$team"]["$t"] == "open"){
+        // First check if it's the by week. If if is, then drop the "open" in there and move on
+        parsedTemplateArray.push("<li class=\"open\"><h3>Open</h3></li>");
       } else {
-        schedule_html = schedule_html + "<li class='open'><h3>Open</h3></li>"
-      }
-      
-    } else {
-      //LOAD THE OPPONENT DISPLAY NAME INTO A VAR
-      var opponent = schedule_arr[i].opponent_display;
-      
-      var gameWeek = i+1;
+        var active = ((i+1) == activeWeek) ? "active":"";
+        console.log(i+1 == activeWeek);
 
-      if(schedule_arr[i].week == activeWeek){
-        var active_state = 'active';
-      } else {
-        var active_state = "";
-      }
-      var atIcon;
-      if(schedule_arr[i].place == "away"){
-        atIcon = "@";
-      } else {
-        atIcon = "";
-
-      }
-
-      // HAS THE GAME BEEN PLAYED? Or is it the one to focus on? 
-      var href_data = "";
-      if((schedule_arr[i].bears_score != "") || (active_state == 'active') || (schedule_arr[i].currentweek > 0)){
-        var played_state = "played";
-        href_data = "href='http://graphics.chicagotribune.com/sports/football/bears/bears-breakdown/week" + gameWeek + "'";
-      } else{
-        var played_state = "";
-      }
-
-      // LETS LOAD THE SCORE (IF THERE IS ONE) OR TIME INTO THAT BOTTOM LINE
-      if( schedule_arr[i].bears_score >1 ){
-        var kickoff_time = "";
-        if(schedule_arr[i].bears_score > schedule_arr[i].opponent_score){
-          var score = "W, " + schedule_arr[i].bears_score + "-" + schedule_arr[i].opponent_score; 
-        } else if(schedule_arr[i].bears_score < schedule_arr[i].opponent_score){
-          var score = "L, " + schedule_arr[i].opponent_score + "-" + schedule_arr[i].bears_score; 
+        //If it's not the bye week, then first check and see if we 
+        //need the past or present/future template
+        if((schedule[i]["gsx$bearsscore"]["$t"] + schedule[i]["gsx$opponentscore"]["$t"]) > 0){
+          // The game has been played
+          parsedTemplateArray.push("<li class=" + active + ">"+pastScheduleTemplate(schedule[i])+"</li>");
         } else {
-          var score = "Tie, " + schedule_arr[i].opponent_score + "-" + schedule_arr[i].bears_score; 
+          // the game has not been played
+          parsedTemplateArray.push("<li class=" + active + ">"+presentFutureTemplate(schedule[i])+"</li>");
         }
-        score = score + " " + schedule_arr[i].overtime;
-        score = "<p><strong>" + score + "</strong></p>";
-      } else {
-        var kickoff_time = schedule_arr[i].kickoff + ", ";
-        var score = "<p class=''>" + schedule_arr[i].tv + "</p>";
       }
-    // LOAD ALL THE DATA INTO AN ARRAY IF NOT ON PHONE 
-    if(onMobile == "false"){
-      schedule_html_arr[i] = "<li class=''><a " + href_data + " data-week='"+ gameWeek +"' class='" + active_state + " " + schedule_arr[i].place + " " + played_state + "'><p class='date'>"+ kickoff_time + schedule_arr[i].date_display  +"</p><img alt='NFL "+ opponent +" logo' src='http://graphics.chicagotribune.com/bears-breakdown/bears-schedule-2014/img/logos/team-"+schedule_arr[i].team+".gif' /><h3>"+ atIcon + opponent + "</h3>" + score + "</a></li>";
-    } else {
-     var schedule_html = schedule_html + "<li class='no-transition-mobile'><a " + href_data + "data-week='"+ gameWeek +"' class='" + active_state + " " + schedule_arr[i].place + " " + played_state + "'><p class='date'>"+  schedule_arr[i].day +", " + schedule_arr[i].date_display  +"</p><img alt='NFL "+ opponent +" logo' src='http://graphics.chicagotribune.com/bears-breakdown/bears-schedule-2014/img/logos/team-"+schedule_arr[i].team+".gif' /><h3>"+ atIcon + opponent + "</h3>" + score + "</a></li>";
-   }
- }
-}
-
-
-var i=0;
-function skedLoop(){
-  setTimeout(function(){
-    $('#bears-sked ul').append(schedule_html_arr[i]);
-    i++;
-    if(i<schedule_html_arr.length){
-      skedLoop();
     }
-  }, 200);
-}
-if(onMobile == "false") {  
-  skedLoop();  
-} else{
-  $('#bears-sked ul').append(schedule_html);
-}
-  // ADD THAT VAR TO THE HOLDER, THEN FADE OUT THE LOADING GIF
-  $('.loading').fadeOut(200, function(){
-  });
-}
 
 
-
-$(document).ready(function(){
-  
-  // Does what it says
-  detectMobile();
-
-  // Always know whether we're at mobile width or not
-  $(window).resize(function(){
-    detectMobile();
-  })
-
-    buildSked(data);  
-
-
-  // ADD TOOLTIPS TO THE CHARTING
-  $('.bar div').tooltip({'container':'body'});
-  $('.bars-wrapper div').tooltip({'container':'body'});
-  
-});
+      // Fate out the loader (use whatever you want),
+      // then drop the array of <li> items into the holder.
+      // To make the flyin effect more neat, you could write a 
+      // function that staggers the placement, one <li> at a time.
+      $('#bears-sked .loading').fadeOut("fast", function(){
+        $('#bears-sked ul').append(parsedTemplateArray);
+      });
+    }).error(function(){
+      alert("There was an error loading the data. Please refresh.")   ;
+    });
+})(jQuery);
