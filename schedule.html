@@ -1,17 +1,66 @@
-<article id='bears-sked' data-target='sked'>
-	<div class='sked-topper'>
-		<h4 class='hidden-phone'>SCHEDULE</h4>
-		<p>
-			<span class='box'></span>
-			= Road game
-		</p>
-	</div>
-	<div class='loading'>
-		<div class="progress progress-striped active">
-			<p>Loading...</p>
-			<div class="bar"></div>
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	
+	<link rel="stylesheet" type="text/css" href="schedule.css">
+	<script type="text/javascript" src ="//code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+	<script type="text/javascript" src="schedule.js"></script>
+</head>
+<body>
+	<article id='bears-sked' data-target='sked'>
+		<div class='sked-topper'>
+			<h4 class='hidden-phone'>SCHEDULE</h4>
+			<p>
+				<span class='box'></span>
+				= Road game
+			</p>
 		</div>
-	</div>
-	<ul class='unstyled'>
-	</ul>
-</article>
+		<div class='loading'>
+			<div class="progress progress-striped active">
+				<p>Loading...</p>
+				<div class="bar"></div>
+			</div>
+		</div>
+		<ul class='unstyled'>
+		</ul>
+	</article>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+
+	});
+</script>
+<script id = "present-future" type="text/template">
+		<a data-week="<%= gsx$week.$t %>" class=" <%= gsx$place.$t %> ">
+			<p class="date"><%= gsx$datedisplay.$t %></p>
+			<img alt="NFL <%= gsx$opponentdisplay.$t %> logo" src="http://graphics.chicagotribune.com/bears-breakdown/bears-schedule-2014/img/logos/team-<%= gsx$team.$t %>.gif">
+			<h3><% if (gsx$place.$t == "away") { print("@") } %><%=gsx$opponentdisplay.$t %></h3>
+			<p class='date'> <%= gsx$kickoff.$t %>, <%= gsx$datedisplay.$t %></p>
+
+		</a>
+</script>
+
+<script id = "past" type="text/template">
+<% var score="";%>
+<% // Calculate whether bears won/lost/tied. Winning score comes first. %>
+<% if( gsx$bearsscore.$t > gsx$opponentscore.$t){ %>
+	<% score = "W, " + gsx$bearsscore.$t + "-" + gsx$opponentscore.$t; %>
+<% } else if(gsx$bearsscore.$t < gsx$opponentscore.$t){ %>
+	<% score = "L, " + gsx$opponentscore.$t + "-" + gsx$bearsscore.$t; %>
+<% } else { %>
+	<% score = "Tie, " + gsx$opponentscore.$t + "-" + gsx$bearsscore.$t; %> 
+<% } %>
+	<a href="http://graphics.chicagotribune.com/sports/football/bears/bears-breakdown/week<%= gsx$week.$t %>" data-week="<%= gsx$week.$t %>" class=" <%= gsx$place.$t %> played">
+		<p class="date"><%= gsx$datedisplay.$t %></p>
+		<img alt="NFL <%= gsx$opponentdisplay.$t %> logo" src="http://graphics.chicagotribune.com/bears-breakdown/bears-schedule-2014/img/logos/team-<%= gsx$team.$t %>.gif">
+		<h3><% if (gsx$place.$t == "away") { print("@") } %><%=gsx$opponentdisplay.$t %></h3>
+		<p>
+			<strong><%= score %> <%= gsx$overtime.$t %></strong>
+		</p>
+	</a>
+</script>
+
+</body>
+</html>
